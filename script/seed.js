@@ -42,6 +42,8 @@ async function seed() {
   let beer = await Item.findByPk(4);
 
   await jason.setItems([fries, beer]);
+
+  // bug here
   fries.isClaimed = true;
   await (beer.isClaimed = true);
 
