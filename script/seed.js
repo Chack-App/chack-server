@@ -35,6 +35,16 @@ async function seed() {
 
   console.log(`seeded ${items.length} items`);
 
+  console.log('setting assosiations for user and items');
+
+  let jason = await User.findByPk(3);
+  let fries = await Item.findByPk(1);
+  let beer = await Item.findByPk(4);
+
+  await jason.setItems([fries, beer]);
+  fries.isClaimed = true;
+  await (beer.isClaimed = true);
+
   console.log(`seeded successfully`);
 }
 
