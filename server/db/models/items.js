@@ -4,9 +4,11 @@ const { db } = require('../index');
 const Item = db.define('items', {
   name: {
     type: Sequelize.STRING,
+    allowNull: false
   },
   price: {
     type: Sequelize.INTEGER,
+    allowNull: false
   },
   isClaimed: {
     type: Sequelize.BOOLEAN,
