@@ -40,7 +40,8 @@ const addItem = {
   },
   async resolve(parent, args, context) {
     let addedItem = await Item.create({
-      type: args.type,
+      name: args.name,
+      price: args.price,
     });
     return addedItem;
   },
