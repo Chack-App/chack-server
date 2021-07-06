@@ -32,6 +32,8 @@ async function seed() {
     })
   ])
 
+  console.log(`seeded ${users.length} users`)
+
   const events = await Promise.all([
     Event.create({
       eventName: "Dinner",
@@ -47,7 +49,7 @@ async function seed() {
     Event.create({ eventName: "Drinks", isComplete: false })
   ])
 
-  console.log(`seeded ${users.length} users`)
+  console.log(`seeded ${events.length} events`)
 
   const items = await Promise.all([
     Item.create({
@@ -75,14 +77,15 @@ async function seed() {
   let jason = await User.findByPk(3)
   let fries = await Item.findByPk(1)
   let beer = await Item.findByPk(4)
+  let dinner = await Event.findByPk(1)
 
   await jason.setItems([fries, beer])
 
-  // bug here
-  fries.isClaimed = true
-  await (beer.isClaimed = true)
+  await fries.update({ isClaimed: true })
+  await beer.update({ isClaimed: true })
 
-  console.log(`seeded ${events.length} events`)
+  await jason.addEvent([dinner])
+
   console.log(`seeded successfully`)
 }
 
