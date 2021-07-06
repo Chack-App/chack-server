@@ -1,23 +1,23 @@
 const Sequelize = require("sequelize");
 
-const databaseName = "chack";
+const db = require("./db");
+const User = require("./models/users");
+const Event = require("./models/events");
 
-const config = {
-  logging: false,
+
+const Item = require('./items');
+
+//associations
+
+User.belongsToMany(Item, { through: 'userItem' });
+
+Item.belongsToMany(User, { through: 'userItem' });
+User.belongsToMany(Event, {through: 'user_event'})
+Event.belongsToMany(User, {through: 'user_event'})
+
+module.exports = {
+  db,
+  User,
+  Event,
+  Item
 };
-
-if (process.env.DATABASE_URL && !process.env.DEV_ENV) {
-  config.dialectOptions = {
-    logging: false,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  };
-}
-
-const db = new Sequelize(
-  process.env.DATABASE_URL || `postgres://localhost:5432/${databaseName}`,
-  config
-);
-
-module.exports = { db };
