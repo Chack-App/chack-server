@@ -1,1 +1,1 @@
-Capstone Frontend for Chack
+Capstone Backend for Chack
