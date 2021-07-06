@@ -3,13 +3,28 @@ const path = require("path");
 const cors = require("cors");
 const { graphqlHTTP } = require("express-graphql");
 const schema = require("../schema/");
+const passport = require("passport");
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const { db } = require("./db/index");
+const sessionStore = new SequelizeStore({ db });
 
 const PORT = 8000;
 
 const app = express();
 module.exports = app;
+
+//passport registration
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await db.models.users.findByPk(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
 
 //logging middleware
 const morgan = require("morgan");
@@ -21,6 +36,18 @@ const generateApp = () => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  app.use(
+    session({
+      secret: "changeMe",
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   //api routes
 
