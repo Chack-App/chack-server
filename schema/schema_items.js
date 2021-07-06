@@ -1,16 +1,23 @@
 const graphql = require('graphql');
 const { Item } = require('../server/db/models');
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLID,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} = graphql;
 
 const ItemSchema = new GraphQLObjectType({
   name: 'Item',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    price: { type: graphql.GraphQLInt },
-    isClaimed: { type: graphql.GraphQLBoolean },
-    splitBetween: { type: graphql.GraphQLInt },
-    receiptId: { type: graphql.GraphQLInt },
+    price: { type: GraphQLInt },
+    isClaimed: { type: GraphQLBoolean },
+    splitBetween: { type: GraphQLInt },
+    receiptId: { type: GraphQLInt },
   }),
 });
 
@@ -35,8 +42,8 @@ const item = {
 const addItem = {
   type: ItemSchema,
   args: {
-    name: { type: graphql.GraphQLString },
-    price: { type: graphql.GraphQLInt },
+    name: { type: GraphQLString },
+    price: { type: GraphQLInt },
   },
   async resolve(parent, args) {
     let addedItem = await Item.create({
@@ -61,6 +68,17 @@ const claimItem = {
   },
 };
 
+const removeItem = {
+  type: ItemSchema,
+  args: {
+    id: { type: GraphQLID },
+  },
+  async resolve(parent, args) {
+    let removedItem = await Item.findByPk(args.id);
+    removedItem.destroy();
+  },
+};
+
 module.exports = {
   itemQueries: {
     item,
@@ -69,6 +87,7 @@ module.exports = {
   itemMutations: {
     addItem,
     claimItem,
+    removeItem,
   },
   ItemSchema,
 };
