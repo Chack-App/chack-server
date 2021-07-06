@@ -1,14 +1,14 @@
 const Sequelize = require('sequelize');
-const { db } = require('../index');
+const db = require('../db');
 
 const Item = db.define('items', {
   name: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   price: {
     type: Sequelize.INTEGER,
-    allowNull: false
+    allowNull: false,
   },
   isClaimed: {
     type: Sequelize.BOOLEAN,
