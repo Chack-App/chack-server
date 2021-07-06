@@ -1,13 +1,15 @@
-const graphql = require("graphql");
+const graphql = require('graphql');
 
-const { userQueries } = require("./schema_users");
+const { userQueries } = require('./schema_users');
+const { itemQueries } = require('./schema_items');
 
 const { GraphQLObjectType, GraphQLSchema } = graphql;
 
 const MasterQuery = new GraphQLObjectType({
-  name: "MasterQuerySchema",
+  name: 'MasterQuerySchema',
   fields: {
     ...userQueries,
+    ...itemQueries,
   },
 });
 
