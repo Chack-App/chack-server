@@ -16,6 +16,13 @@ const ItemSchema = new GraphQLObjectType({
 
 // Query
 
+const items = {
+  type: new GraphQLList(ItemSchema),
+  resolve() {
+    return Item.findAll();
+  },
+};
+
 const item = {
   type: ItemSchema,
   args: { id: { type: GraphQLID } },
@@ -24,9 +31,43 @@ const item = {
   },
 };
 
+// Mutation
+const addItem = {
+  type: ItemSchema,
+  args: {
+    name: { type: graphql.GraphQLString },
+    price: { type: graphql.GraphQLInt },
+  },
+  async resolve(parent, args, context) {
+    let addedItem = await Item.create({
+      type: args.type,
+    });
+    return addedItem;
+  },
+};
+
+const claimItem = {
+  type: ItemSchema,
+  args: {
+    id: { type: GraphQLID },
+  },
+  async resolve(parent, args) {
+    let claimedItem = await Item.findByPk(args.id);
+    console.log(claimedItem);
+    claimedItem.isClaimed = true;
+    claimedItem.save();
+    return claimedItem;
+  },
+};
+
 module.exports = {
   itemQueries: {
     item,
+    items,
+  },
+  itemMutations: {
+    addItem,
+    claimItem,
   },
   ItemSchema,
 };
