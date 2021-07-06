@@ -1,29 +1,31 @@
-const graphql = require('graphql');
+const graphql = require("graphql")
 
-const { userQueries } = require('./schema_users');
-const { itemQueries, itemMutations } = require('./schema_items');
-const { eventQueries }  = require("./schema_events")
+const { userQueries } = require("./schema_users")
+const { itemQueries, itemMutations } = require("./schema_items")
+const { eventQueries } = require("./schema_events")
+// const { userEventQueries } = require("./schema_user_events")
 
-const { GraphQLObjectType, GraphQLSchema } = graphql;
+const { GraphQLObjectType, GraphQLSchema } = graphql
 
 const MasterQuery = new GraphQLObjectType({
-  name: 'MasterQuerySchema',
-  description: 'This is encompases all Queries',
+  name: "MasterQuerySchema",
+  description: "This is encompases all Queries",
   fields: {
     ...userQueries,
     ...itemQueries,
     ...eventQueries
-  },
-});
+    // ...userEventQueries
+  }
+})
 
 const MasterMutation = new GraphQLObjectType({
-  name: 'MasterMutationSchema',
+  name: "MasterMutationSchema",
   fields: {
-    ...itemMutations,
-  },
-});
+    ...itemMutations
+  }
+})
 
 module.exports = new GraphQLSchema({
   query: MasterQuery,
-  mutation: MasterMutation,
-});
+  mutation: MasterMutation
+})

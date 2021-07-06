@@ -1,13 +1,14 @@
-const graphql = require("graphql");
-const { Event } = require("../server/db");
+const graphql = require("graphql")
+const { Event } = require("../server/db")
+// const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLID,
   GraphQLBoolean,
   GraphQLNonNull,
-  GraphQLList,
-} = graphql;
+  GraphQLList
+} = graphql
 
 const EventType = new GraphQLObjectType({
   name: "Event",
@@ -15,12 +16,13 @@ const EventType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLNonNull(GraphQLID) },
     eventName: { type: GraphQLNonNull(GraphQLString) },
-    description: {type: GraphQLString },
-    isComplete: { type: GraphQLNonNull(GraphQLBoolean) },
+    description: { type: GraphQLString },
+    isComplete: { type: GraphQLNonNull(GraphQLBoolean) }
+    // users: { type: GraphQLList(UserSchema) }
     // In the future we should figure out how to setup a createdAt (Date) and
     // completedAt (Date) field so we can query events by dates
-  }),
-});
+  })
+})
 
 //Queries
 const event = {
@@ -28,19 +30,20 @@ const event = {
   type: EventType,
   args: { id: { type: GraphQLID } },
   resolve(parent, args) {
-    return Event.findByPk(args.id);
-  },
-};
+    return Event.findByPk(args.id)
+  }
+}
 
 const allEvents = {
   description: "Lists all events",
   type: new GraphQLList(EventType),
-  resolve: () => Event.findAll(),
-};
+  resolve: () => Event.findAll()
+}
 
 module.exports = {
   eventQueries: {
     event,
-    allEvents,
+    allEvents
   },
-};
+  EventType
+}
