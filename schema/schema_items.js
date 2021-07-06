@@ -38,7 +38,7 @@ const addItem = {
     name: { type: graphql.GraphQLString },
     price: { type: graphql.GraphQLInt },
   },
-  async resolve(parent, args, context) {
+  async resolve(parent, args) {
     let addedItem = await Item.create({
       name: args.name,
       price: args.price,
