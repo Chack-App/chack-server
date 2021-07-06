@@ -1,6 +1,5 @@
-const { db } = require("../server/db/db");
-const { User, Event, Item } = require("../server/db");
-
+const db = require('../server/db/db');
+const { User, Event, Item } = require('../server/db');
 
 async function seed() {
   await db.sync({ force: true });
@@ -14,10 +13,18 @@ async function seed() {
   ]);
 
   const events = await Promise.all([
-    Event.create({ eventName: "Dinner", description: "David's Birthday", isComplete: false}),
-    Event.create({ eventName: "Poker Night", description: "Take it to the Town!!!", isComplete: false}),
-    Event.create({ eventName: "Brunch", isComplete: false}),
-    Event.create({ eventName: "Drinks", isComplete: false}),
+    Event.create({
+      eventName: 'Dinner',
+      description: "David's Birthday",
+      isComplete: false,
+    }),
+    Event.create({
+      eventName: 'Poker Night',
+      description: 'Take it to the Town!!!',
+      isComplete: false,
+    }),
+    Event.create({ eventName: 'Brunch', isComplete: false }),
+    Event.create({ eventName: 'Drinks', isComplete: false }),
   ]);
 
   console.log(`seeded ${users.length} users`);
