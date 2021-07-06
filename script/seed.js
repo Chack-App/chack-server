@@ -74,17 +74,20 @@ async function seed() {
 
   console.log("setting assosiations for user and items")
 
-  let jason = await User.findByPk(3)
-  let fries = await Item.findByPk(1)
-  let beer = await Item.findByPk(4)
-  let dinner = await Event.findByPk(1)
+  let jason = users[1]
+  let david = users[2]
+  let fries = items[0]
+  let beer = items[3]
+  let dinner = events[0]
+  let drinks = events[3]
 
   await jason.setItems([fries, beer])
 
   await fries.update({ isClaimed: true })
   await beer.update({ isClaimed: true })
 
-  await jason.addEvent([dinner])
+  await jason.addEvents([dinner, drinks])
+  await david.addEvent([dinner])
 
   console.log(`seeded successfully`)
 }
