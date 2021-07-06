@@ -19,9 +19,6 @@ const Event = db.define("events", {
   },
   completedAt: {
     type: Sequelize.DATE,
-    validate: {
-      notEmpty: true,
-    },
   },
 });
 
