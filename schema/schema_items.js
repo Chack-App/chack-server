@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { Item } = require('../server/db/models');
+const { Item } = require('../server/db/models/items');
 const {
   GraphQLObjectType,
   GraphQLString,
