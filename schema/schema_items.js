@@ -1,13 +1,13 @@
-const graphql = require("graphql");
-const { Item } = require("../server/db/models/items");
+const graphql = require("graphql")
+const { Item } = require("../server/db/models/items")
 const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLID,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean,
-} = graphql;
+  GraphQLBoolean
+} = graphql
 
 const ItemSchema = new GraphQLObjectType({
   name: "Item",
@@ -17,77 +17,77 @@ const ItemSchema = new GraphQLObjectType({
     price: { type: GraphQLInt },
     isClaimed: { type: GraphQLBoolean },
     splitBetween: { type: GraphQLInt },
-    receiptId: { type: GraphQLInt },
-  }),
-});
+    receiptId: { type: GraphQLInt }
+  })
+})
 
 // Query
 
 const items = {
   type: new GraphQLList(ItemSchema),
   resolve() {
-    return Item.findAll();
-  },
-};
+    return Item.findAll()
+  }
+}
 
 const item = {
   type: ItemSchema,
   args: { id: { type: GraphQLID } },
   resolve(parent, args) {
-    return Item.findByPk(args.id);
-  },
-};
+    return Item.findByPk(args.id)
+  }
+}
 
 // Mutation
 const addItem = {
   type: ItemSchema,
   args: {
     name: { type: GraphQLString },
-    price: { type: GraphQLInt },
+    price: { type: GraphQLInt }
   },
   async resolve(parent, args) {
     let addedItem = await Item.create({
       name: args.name,
-      price: args.price,
-    });
-    return addedItem;
-  },
-};
+      price: args.price
+    })
+    return addedItem
+  }
+}
 
 const claimItem = {
   type: ItemSchema,
   args: {
-    id: { type: GraphQLID },
+    id: { type: GraphQLID }
   },
   async resolve(parent, args) {
-    let claimedItem = await Item.findByPk(args.id);
-    console.log(claimedItem);
-    claimedItem.isClaimed = true;
-    claimedItem.save();
-    return claimedItem;
-  },
-};
+    let claimedItem = await Item.findByPk(args.id)
+    console.log(claimedItem)
+    claimedItem.isClaimed = true
+    claimedItem.save()
+    return claimedItem
+  }
+}
 
 const removeItem = {
   type: ItemSchema,
   args: {
-    id: { type: GraphQLID },
+    id: { type: GraphQLID }
   },
   async resolve(parent, args) {
-    let removedItem = await Item.findByPk(args.id);
-    removedItem.destroy();
-  },
-};
+    let removedItem = await Item.findByPk(args.id)
+    removedItem.destroy()
+  }
+}
 
 module.exports = {
   itemQueries: {
     item,
-    items,
+    items
   },
   itemMutations: {
     addItem,
     claimItem,
-    removeItem,
+    removeItem
   },
-  ItemSchema,
-};
+  ItemSchema
+}

@@ -1,21 +1,21 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize")
 
-const db = require('./db');
-const User = require('./models/users');
-const Event = require('./models/events');
-const Item = require('./models/items');
+const db = require("./db")
+const User = require("./models/users")
+const Event = require("./models/events")
+const Item = require("./models/items")
 
 //associations
 
-User.belongsToMany(Item, { through: 'userItem' });
+User.belongsToMany(Item, { through: "userItem" })
+Item.belongsToMany(User, { through: "userItem" })
 
-Item.belongsToMany(User, { through: 'userItem' });
-User.belongsToMany(Event, { through: 'user_event' });
-Event.belongsToMany(User, { through: 'user_event' });
+User.belongsToMany(Event, { through: "user_event" })
+Event.belongsToMany(User, { through: "user_event" })
 
 module.exports = {
   db,
   User,
   Event,
-  Item,
-};
+  Item
+}
