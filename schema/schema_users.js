@@ -30,7 +30,7 @@ const user = {
 
 // Mutation
 const login = {
-  type: GraphQLBoolean,
+  type: UserSchema,
   args: {
     username: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
@@ -50,7 +50,7 @@ const login = {
       );
     } else {
       request.login(user, (error) => (error ? error : user));
-      return true;
+      return user;
     }
   },
 };
