@@ -13,7 +13,7 @@ const UserSchema = new GraphQLObjectType({
   name: "User",
   fields: () => ({
     id: { type: GraphQLID },
-    username: { type: GraphQLString },
+    email: { type: GraphQLString },
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
   }),
@@ -32,21 +32,21 @@ const user = {
 const login = {
   type: UserSchema,
   args: {
-    username: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
   },
   async resolve(parent, args, request) {
-    const user = await User.findOne({ where: { username: args.username } });
+    const user = await User.findOne({ where: { email: args.email } });
     const validate = await user.correctPassword(args.password);
 
     if (!user) {
       throw new Error(
-        `Could not find account associated with username: ${args.username}`
+        `Could not find account associated with email: ${args.email}`
       );
     } else if (!validate) {
       console.log("here");
       throw new Error(
-        `Incorrect password for account associated with: ${args.username}`
+        `Incorrect password for account associated with: ${args.email}`
       );
     } else {
       request.login(user, (error) => (error ? error : user));
