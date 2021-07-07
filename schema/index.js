@@ -1,6 +1,6 @@
 const graphql = require("graphql")
 
-const { userQueries } = require("./schema_users")
+const { userQueries, userMutations } = require("./schema_users")
 const { itemQueries, itemMutations } = require("./schema_items")
 const { eventQueries, eventMutations } = require("./schema_events")
 // const { userEventQueries } = require("./schema_user_events")
@@ -22,6 +22,7 @@ const MasterMutation = new GraphQLObjectType({
   name: "MasterMutationSchema",
   fields: {
     ...itemMutations,
+    ...userMutations,
     ...eventMutations
   }
 })
