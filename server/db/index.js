@@ -15,14 +15,11 @@ Item.belongsToMany(User, { through: "userItem" })
 User.belongsToMany(Event, { through: "user_event" })
 Event.belongsToMany(User, { through: "user_event" })
 
-User.belongsToMany(Receipt, { through: "user_receipt"})
-Receipt.belongsToMany(User, { through: "user_receipt"})
+Event.hasMany(Receipt)
+Receipt.belongsTo(Event)
 
-Event.belongsToMany(Receipt, { through: "event_receipt"})
-Receipt.belongsToMany(Event, { through: "event_receipt"})
-
-Item.belongsTo(Receipt)
 Receipt.hasMany(Item)
+Item.belongsTo(Receipt)
 
 module.exports = {
   db,

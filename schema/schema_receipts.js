@@ -57,7 +57,7 @@ const addReceipt = {
       isActive
     });
     let currentReceipt = await Event.findByPk(1);
-    await currentReceipt.addEvent(newReceipt);
+    await currentReceipt.addReceipt(newReceipt);
     return newReceipt;
   }
 };

@@ -1,5 +1,5 @@
 const db = require("../server/db/db")
-const { User, Event, Item } = require("../server/db")
+const { User, Event, Item, Receipt } = require("../server/db")
 
 async function seed() {
   await db.sync({ force: true })
@@ -72,22 +72,45 @@ async function seed() {
 
   console.log(`seeded ${items.length} items`)
 
-  console.log("setting assosiations for user and items")
+  const receipts = await Promise.all([
+    Receipt.create({
+      name: "Dinner",
+      isPaid: false
+    }),
+    Receipt.create({
+      name: "Drinks",
+      isPaid: false
+    })
+  ])
+  console.log(`seeded ${receipts.length} receipts`)
+
+  console.log("setting assosiations")
 
   let jason = users[1]
   let david = users[2]
   let fries = items[0]
+  let calamari = items[1]
   let beer = items[3]
   let dinner = events[0]
   let drinks = events[3]
+  let dinnerReceipt = receipts[0]
+  let drinksReceipt = receipts[1]
 
-  await jason.setItems([fries, beer])
+  await jason.setItems([fries, beer, calamari])
 
   await fries.update({ isClaimed: true })
   await beer.update({ isClaimed: true })
+  await calamari.update({ isClaimed: true })
 
   await jason.addEvents([dinner, drinks])
   await david.addEvent([dinner])
+
+  await dinnerReceipt.setEvent(dinner)
+  await drinksReceipt.setEvent(drinks)
+
+  await fries.setReceipt(dinnerReceipt)
+  await calamari.setReceipt(dinnerReceipt)
+  await beer.setReceipt(drinksReceipt)
 
   console.log(`seeded successfully`)
 }
