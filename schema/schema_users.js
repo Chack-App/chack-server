@@ -72,7 +72,14 @@ const login = {
         `Incorrect password for account associated with: ${args.email}`
       )
     } else {
-      request.login(user, error => (error ? error : user))
+      const setUser = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      }
+      request.login(setUser, error => (error ? error : setUser))
+      console.log(request.user)
       return user
     }
   }
