@@ -21,12 +21,19 @@ const UserSchema = new GraphQLObjectType({
   })
 })
 
+const AuthType = new GraphQLObjectType({
+  name: "Authentication",
+  fields: () => ({
+    token: { type: GraphQLString }
+  })
+})
+
 //Query
 const user = {
   type: UserSchema,
-  args: { id: { type: GraphQLID } },
-  resolve(parent, args) {
-    return User.findByPk(args.id)
+  // args: { id: { type: GraphQLID } },
+  resolve(parent, args, context) {
+    return User.findByToken(context.authorization)
   }
 }
 
@@ -53,35 +60,43 @@ const userEvents = {
 
 // Mutation
 const login = {
-  type: UserSchema,
+  type: AuthType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
-  async resolve(parent, args, request) {
-    const user = await User.findOne({ where: { email: args.email } })
-    const validate = await user.correctPassword(args.password)
+  async resolve(parent, args) {
+    const token = await User.authenticate({
+      email: args.email,
+      password: args.password
+    })
+    return { token }
+  }
+}
 
-    if (!user) {
-      throw new Error(
-        `Could not find account associated with email: ${args.email}`
-      )
-    } else if (!validate) {
-      console.log("here")
-      throw new Error(
-        `Incorrect password for account associated with: ${args.email}`
-      )
-    } else {
-      const setUser = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      }
-      request.login(setUser, error => (error ? error : setUser))
-      console.log(request.user)
-      return user
+const signup = {
+  type: AuthType,
+  args: {
+    email: { type: GraphQLString },
+    password: { type: GraphQLString }
+  },
+  async resolve(parent, args) {
+    const user = await User.findOne({
+      where: { email: args.email }
+    })
+
+    if (user) {
+      throw new Error("This user already exists")
     }
+    await User.create({
+      email: args.email,
+      password: args.password
+    })
+    const token = await User.authenticate({
+      email: args.email,
+      password: args.password
+    })
+    return { token }
   }
 }
 
@@ -91,7 +106,8 @@ module.exports = {
     userEvents
   },
   userMutations: {
-    login
+    login,
+    signup
   },
   UserSchema
 }
