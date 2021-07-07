@@ -1,5 +1,5 @@
-const graphql = require('graphql');
-const { Item } = require('../server/db/models');
+const graphql = require("graphql");
+const { Item } = require("../server/db/models/items");
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -10,7 +10,7 @@ const {
 } = graphql;
 
 const ItemSchema = new GraphQLObjectType({
-  name: 'Item',
+  name: "Item",
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
