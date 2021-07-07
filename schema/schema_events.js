@@ -1,5 +1,5 @@
 const graphql = require("graphql")
-const { Event } = require("../server/db")
+const { Event, User } = require("../server/db")
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -40,10 +40,31 @@ const allEvents = {
   resolve: () => Event.findAll()
 }
 
+// Mutation
+const addEvent = {
+  type: EventType,
+  args: {
+    eventName: { type: GraphQLString },
+    description: { type: GraphQLString }
+  },
+  async resolve(parent, { eventName, description }) {
+    let newEvent = await Event.create({
+      eventName,
+      description
+    });
+    let currentUser = await User.findByPk(1);
+    await currentUser.addEvent(newEvent);
+    return newEvent;
+  }
+};
+
 module.exports = {
   eventQueries: {
     event,
     allEvents
+  },
+  eventMutations: {
+    addEvent
   },
   EventType
 }
