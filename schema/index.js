@@ -4,6 +4,7 @@ const { userQueries, userMutations } = require("./schema_users")
 const { itemQueries, itemMutations } = require("./schema_items")
 const { eventQueries, eventMutations } = require("./schema_events")
 // const { userEventQueries } = require("./schema_user_events")
+const { receiptQueries, receiptMutations } = require("./schema_receipts")
 
 const { GraphQLObjectType, GraphQLSchema } = graphql
 
@@ -13,7 +14,8 @@ const MasterQuery = new GraphQLObjectType({
   fields: {
     ...userQueries,
     ...itemQueries,
-    ...eventQueries
+    ...eventQueries,
+    ...receiptQueries
     // ...userEventQueries
   }
 })
@@ -23,7 +25,8 @@ const MasterMutation = new GraphQLObjectType({
   fields: {
     ...itemMutations,
     ...userMutations,
-    ...eventMutations
+    ...eventMutations,
+    ...receiptMutations
   }
 })
 

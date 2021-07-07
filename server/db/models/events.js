@@ -30,6 +30,7 @@ const completeEvent = (event) => {
         throw new Error("You cannot update a completed event")     
     }
     else if (event.changed("isComplete")) {   // mark event as completed and add completion date
+        // if any active receipts remain in Event throw Error!!!!!
         event.isComplete = true;
         event.completedAt = Date.now()
     }

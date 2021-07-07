@@ -1,5 +1,5 @@
 const graphql = require("graphql")
-const { Receipt, User } = require("../server/db")
+const { Receipt, User, Event } = require("../server/db")
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -16,8 +16,8 @@ const ReceiptType = new GraphQLObjectType({
   description: "This represents Receipts",
   fields: () => ({
     id: { type: GraphQLNonNull(GraphQLID) },
-    receiptName: { type: GraphQLNonNull(GraphQLString) },
-    isActive: { type: GraphQLNonNull(GraphQLBoolean) },
+    name: { type: GraphQLNonNull(GraphQLString) },
+    isPaid: { type: GraphQLNonNull(GraphQLBoolean) },
     eventId: { type: GraphQLInt },
     cardDownId: { type: GraphQLInt }
   })
@@ -36,9 +36,12 @@ const receipt = {
 const allReceipts = {
   description: "Lists all receipts",
   type: new GraphQLList(ReceiptType),
-  async resolve(parent, { eventId }) {
-   let receipts = await Receipt.findAll({
-     where: { eventId: eventId }
+  args: { eventId: { type: GraphQLInt } },
+  async resolve(parent, args) {
+    let receipts = await Receipt.findAll({
+      where: {
+        eventId: args.eventId
+      }
     })
     return receipts
   }
@@ -48,42 +51,45 @@ const allReceipts = {
 const addReceipt = {
   type: ReceiptType,
   args: {
-    receiptName: { type: GraphQLString },
-    isActive: { type: GraphQLBoolean }
+    name: { type: GraphQLString },
+    eventId: { type: GraphQLInt }
   },
-  async resolve(parent, { receiptName, isActive }) {
+  async resolve(parent, { name, eventId }) {
     let newReceipt = await Receipt.create({
-      receiptName,
-      isActive
-    });
-    let currentReceipt = await Event.findByPk(1);
-    await currentReceipt.addReceipt(newReceipt);
-    return newReceipt;
+      name,
+      eventId
+    })
+    let currentEvent = await Event.findByPk(eventId)
+    await currentEvent.addReceipt(newReceipt)
+    return newReceipt
   }
-};
+}
 
-const completeReceipt = {
+const payReceipt = {
   type: ReceiptType,
   args: {
-    receiptId: { type: GraphQLID },
-    receiptName: { type: GraphQLString },
-    isActive: { type: GraphQLBoolean }  
+    id: { type: GraphQLID }
   },
-  async resolve(parent, { receiptId }){
-    let updatedReceipt = await Receipt.findByPk(receiptId)
-    updatedReceipt.isActive = false
+  async resolve(parent, { id }) {
+    let updatedReceipt = await Receipt.findByPk(id)
+    if (updatedReceipt.isPaid === true) {
+      throw new Error("You cannot update a completed receipt")
+    } else {
+      updatedReceipt.isPaid = true
+    }
     updatedReceipt.save()
+    return updatedReceipt
   }
 }
 
 module.exports = {
-  eventQueries: {
+  receiptQueries: {
     receipt,
     allReceipts
   },
-  eventMutations: {
+  receiptMutations: {
     addReceipt,
-    completeReceipt
+    payReceipt
   },
   ReceiptType
 }
