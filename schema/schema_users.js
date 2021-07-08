@@ -24,7 +24,11 @@ const UserSchema = new GraphQLObjectType({
 const AuthType = new GraphQLObjectType({
   name: "Authentication",
   fields: () => ({
-    token: { type: GraphQLString }
+    token: { type: GraphQLString },
+    id: { type: GraphQLID },
+    email: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString }
   })
 })
 
@@ -53,7 +57,7 @@ const userEvents = {
       ]
     })
 
-    console.log(userEventArr.events)
+    // console.log(userEventArr.events)
     return userEventArr.events
   }
 }
@@ -70,7 +74,12 @@ const login = {
       email: args.email,
       password: args.password
     })
-    return { token }
+    const { email, firstName, lastName, id } = await User.findOne({
+      where: {
+        email: args.email
+      }
+    })
+    return { token, email, firstName, lastName, id }
   }
 }
 
