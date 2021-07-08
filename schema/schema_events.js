@@ -49,6 +49,52 @@ const allEvents = {
   resolve: () => Event.findAll()
 }
 
+const activeEventReceipts = {
+  type: new GraphQLList(ReceiptType),
+  args: { id: { type: GraphQLID } },
+  async resolve(parent, args) {
+    let activeEventReceipts = await Event.findOne({
+      where:{
+        id: args.id
+      },
+      include: [
+        {
+          model: Receipt,
+          where:{
+            isPaid: false
+          }
+        }
+      ]
+    })
+    return activeEventReceipts.receipts
+  }
+}
+
+
+const pastEventReceipts = {
+  type: new GraphQLList(ReceiptType),
+  args: { id: { type: GraphQLID } },
+  async resolve(parent, args) {
+    let pastEventReceipts = await Event.findOne({
+      where:{
+        id: args.id
+      },
+      include: [
+        {
+          model: Receipt,
+          where:{
+            isPaid: true
+          }
+        }
+      ]
+    })
+    return pastEventReceipts.receipts
+  }
+}
+
+
+
+
 // Mutation
 const addEvent = {
   type: EventType,
@@ -88,7 +134,9 @@ const joinEvent = {
 module.exports = {
   eventQueries: {
     event,
-    allEvents
+    allEvents,
+    activeEventReceipts,
+    pastEventReceipts
   },
   eventMutations: {
     addEvent,

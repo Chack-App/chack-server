@@ -1,5 +1,6 @@
 const graphql = require("graphql")
-const { Receipt, User, Event } = require("../server/db")
+const { Receipt, Event, Item } = require("../server/db")
+const { ItemSchema } = require("./schema_items") 
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -19,7 +20,8 @@ const ReceiptType = new GraphQLObjectType({
     name: { type: GraphQLNonNull(GraphQLString) },
     isPaid: { type: GraphQLNonNull(GraphQLBoolean) },
     eventId: { type: GraphQLInt },
-    cardDownId: { type: GraphQLInt }
+    cardDownId: { type: GraphQLInt },
+    items: { type: GraphQLList(ItemSchema)}
   })
 })
 
@@ -29,7 +31,11 @@ const receipt = {
   type: ReceiptType,
   args: { id: { type: GraphQLID } },
   resolve(parent, args) {
-    return Receipt.findByPk(args.id)
+    return Receipt.findByPk(args.id, {
+      include: [{
+        model: Item
+      }]
+    })
   }
 }
 
@@ -67,7 +73,8 @@ const allPastReceipts = {
   type: new GraphQLList(ReceiptType),
   args: { eventId: { type: GraphQLInt } },
   async resolve(parent, args) {
-    let receipts = await Receipt.findAll({
+    // **** Keep in mind .findOne only gives you one instance, not all of them
+    let receipts = await Receipt.findOne({
       where: {
         eventId: args.eventId,
         isPaid: true

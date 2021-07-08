@@ -6,7 +6,6 @@ const {
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLBoolean
 } = graphql
 
 let { EventType } = require("./schema_events")
@@ -57,8 +56,49 @@ const userEvents = {
       ]
     })
 
-    // console.log(userEventArr.events)
     return userEventArr.events
+  }
+}
+
+const activeUserEvents = {
+  type: new GraphQLList(EventType),
+  args: { id: { type: GraphQLID } },
+  async resolve(parent, args) {
+    let activeUserEvents = await User.findOne({
+      where: {
+        id: args.id
+      },
+      include: [
+        {
+          model: Event,
+          where: {
+            isComplete: false
+          }
+        }
+      ]
+    })
+    return activeUserEvents.events
+  }
+}
+
+const pastUserEvents = {
+  type: new GraphQLList(EventType),
+  args: { id: { type: GraphQLID } },
+  async resolve(parent, args) {
+    let activeUserEvents = await User.findOne({
+      where: {
+        id: args.id
+      },
+      include: [
+        {
+          model: Event,
+          where: {
+            isComplete: true
+          }
+        }
+      ]
+    })
+    return activeUserEvents.events
   }
 }
 
@@ -112,7 +152,9 @@ const signup = {
 module.exports = {
   userQueries: {
     user,
-    userEvents
+    userEvents,
+    activeUserEvents,
+    pastUserEvents
   },
   userMutations: {
     login,
