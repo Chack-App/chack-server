@@ -17,6 +17,7 @@ const EventType = new GraphQLObjectType({
     id: { type: GraphQLNonNull(GraphQLID) },
     eventName: { type: GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
+    passcode: { type: GraphQLString },
     isComplete: { type: GraphQLNonNull(GraphQLBoolean) }
     // users: { type: GraphQLList(UserSchema) }
     // In the future we should figure out how to setup a createdAt (Date) and
