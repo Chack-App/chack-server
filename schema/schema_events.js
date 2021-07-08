@@ -1,5 +1,5 @@
 const graphql = require("graphql")
-const { Event, User } = require("../server/db")
+const { Event, User, Receipt } = require("../server/db")
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -9,6 +9,7 @@ const {
   GraphQLNonNull,
   GraphQLList
 } = graphql
+const { ReceiptType } = require("./schema_receipts");
 
 const EventType = new GraphQLObjectType({
   name: "Event",
@@ -18,7 +19,8 @@ const EventType = new GraphQLObjectType({
     eventName: { type: GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
     passcode: { type: GraphQLString },
-    isComplete: { type: GraphQLNonNull(GraphQLBoolean) }
+    isComplete: { type: GraphQLNonNull(GraphQLBoolean) },
+    receipts: { type: GraphQLList(ReceiptType) },
     // users: { type: GraphQLList(UserSchema) }
     // In the future we should figure out how to setup a createdAt (Date) and
     // completedAt (Date) field so we can query events by dates
@@ -31,7 +33,13 @@ const event = {
   type: EventType,
   args: { id: { type: GraphQLID } },
   resolve(parent, args) {
-    return Event.findByPk(args.id)
+    return Event.findByPk(args.id, {
+      include: [
+        {
+          model: Receipt
+        }
+      ]
+    })
   }
 }
 
