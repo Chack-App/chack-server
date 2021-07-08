@@ -73,6 +73,7 @@ const allPastReceipts = {
   type: new GraphQLList(ReceiptType),
   args: { eventId: { type: GraphQLInt } },
   async resolve(parent, args) {
+    // **** Keep in mind .findOne only gives you one instance, not all of them
     let receipts = await Receipt.findOne({
       where: {
         eventId: args.eventId,
