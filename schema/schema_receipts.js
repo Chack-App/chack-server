@@ -47,17 +47,49 @@ const allReceipts = {
   }
 }
 
+const allActiveReceipts = {
+  description: "Lists all active receipts",
+  type: new GraphQLList(ReceiptType),
+  args: { eventId: { type: GraphQLInt } },
+  async resolve(parent, args) {
+    let receipts = await Receipt.findAll({
+      where: {
+        eventId: args.eventId,
+        isPaid: false
+      }
+    })
+    return receipts
+  }
+}
+
+const allPastReceipts = {
+  description: "Lists all past receipts",
+  type: new GraphQLList(ReceiptType),
+  args: { eventId: { type: GraphQLInt } },
+  async resolve(parent, args) {
+    let receipts = await Receipt.findAll({
+      where: {
+        eventId: args.eventId,
+        isPaid: true
+      }
+    })
+    return receipts
+  }
+}
+
 // Mutation
 const addReceipt = {
   type: ReceiptType,
   args: {
     name: { type: GraphQLString },
-    eventId: { type: GraphQLInt }
+    eventId: { type: GraphQLInt },
+    cardDownId: { type: GraphQLInt }
   },
-  async resolve(parent, { name, eventId }) {
+  async resolve(parent, { name, eventId, cardDownId }) {
     let newReceipt = await Receipt.create({
       name,
-      eventId
+      eventId,
+      cardDownId
     })
     let currentEvent = await Event.findByPk(eventId)
     await currentEvent.addReceipt(newReceipt)
@@ -85,7 +117,9 @@ const payReceipt = {
 module.exports = {
   receiptQueries: {
     receipt,
-    allReceipts
+    allReceipts,
+    allActiveReceipts,
+    allPastReceipts
   },
   receiptMutations: {
     addReceipt,
