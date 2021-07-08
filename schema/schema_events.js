@@ -1,5 +1,5 @@
 const graphql = require("graphql")
-const { Event, User } = require("../server/db")
+const { Event, User, Receipt } = require("../server/db")
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -9,6 +9,7 @@ const {
   GraphQLNonNull,
   GraphQLList
 } = graphql
+const { ReceiptType } = require("./schema_receipts");
 
 const EventType = new GraphQLObjectType({
   name: "Event",
@@ -17,7 +18,9 @@ const EventType = new GraphQLObjectType({
     id: { type: GraphQLNonNull(GraphQLID) },
     eventName: { type: GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
-    isComplete: { type: GraphQLNonNull(GraphQLBoolean) }
+    passcode: { type: GraphQLString },
+    isComplete: { type: GraphQLNonNull(GraphQLBoolean) },
+    receipts: { type: GraphQLList(ReceiptType) },
     // users: { type: GraphQLList(UserSchema) }
     // In the future we should figure out how to setup a createdAt (Date) and
     // completedAt (Date) field so we can query events by dates
@@ -30,7 +33,13 @@ const event = {
   type: EventType,
   args: { id: { type: GraphQLID } },
   resolve(parent, args) {
-    return Event.findByPk(args.id)
+    return Event.findByPk(args.id, {
+      include: [
+        {
+          model: Receipt
+        }
+      ]
+    })
   }
 }
 
@@ -58,13 +67,32 @@ const addEvent = {
   }
 };
 
+const joinEvent = {
+  type: EventType,
+  args: {
+    passcode: { type: GraphQLString },
+  },
+  async resolve(parent, { passcode }) {
+    const event = await Event.findOne({
+      where: {
+        passcode
+      }
+    })
+    const user = await User.findByPk(1);
+    await user.addEvent(event)
+    return event;
+  }
+
+}
+
 module.exports = {
   eventQueries: {
     event,
     allEvents
   },
   eventMutations: {
-    addEvent
+    addEvent,
+    joinEvent
   },
   EventType
 }
