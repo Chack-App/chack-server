@@ -38,7 +38,7 @@ async function seed() {
     Event.create({
       eventName: "Dinner",
       description: "David's Birthday",
-      isComplete: false
+      isComplete: true
     }),
     Event.create({
       eventName: "Poker Night",
