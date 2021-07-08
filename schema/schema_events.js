@@ -59,13 +59,32 @@ const addEvent = {
   }
 };
 
+const joinEvent = {
+  type: EventType,
+  args: {
+    passcode: { type: GraphQLString },
+  },
+  async resolve(parent, { passcode }) {
+    const event = await Event.findOne({
+      where: {
+        passcode
+      }
+    })
+    const user = await User.findByPk(1);
+    await user.addEvent(event)
+    return event;
+  }
+
+}
+
 module.exports = {
   eventQueries: {
     event,
     allEvents
   },
   eventMutations: {
-    addEvent
+    addEvent,
+    joinEvent
   },
   EventType
 }
