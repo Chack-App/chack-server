@@ -71,6 +71,7 @@ const activeUserEvents = {
       include: [
         {
           model: Event,
+          required: false,
           where: {
             isComplete: false
           }
