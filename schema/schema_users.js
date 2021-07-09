@@ -5,7 +5,7 @@ const {
   GraphQLString,
   GraphQLID,
   GraphQLList,
-  GraphQLNonNull,
+  GraphQLNonNull
 } = graphql
 
 let { EventType } = require("./schema_events")
@@ -71,6 +71,7 @@ const activeUserEvents = {
       include: [
         {
           model: Event,
+          required: false,
           where: {
             isComplete: false
           }
@@ -127,7 +128,9 @@ const signup = {
   type: AuthType,
   args: {
     email: { type: GraphQLString },
-    password: { type: GraphQLString }
+    password: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString }
   },
   async resolve(parent, args) {
     const user = await User.findOne({
@@ -137,15 +140,17 @@ const signup = {
     if (user) {
       throw new Error("This user already exists")
     }
-    await User.create({
+    const { email, firstName, lastName, id } = await User.create({
       email: args.email,
-      password: args.password
+      password: args.password,
+      firstName: args.firstName,
+      lastName: args.lastName
     })
     const token = await User.authenticate({
       email: args.email,
       password: args.password
     })
-    return { token }
+    return { token, email, firstName, lastName, id }
   }
 }
 
