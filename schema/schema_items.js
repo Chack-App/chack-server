@@ -1,7 +1,8 @@
 const graphql = require("graphql")
-const { Item } = require("../server/db/models/items")
+const { Item, Receipt } = require("../server/db/")
 const {
   GraphQLObjectType,
+  GraphQLInputObjectType,
   GraphQLString,
   GraphQLID,
   GraphQLList,
@@ -9,8 +10,24 @@ const {
   GraphQLBoolean
 } = graphql
 
+// Item Type
+
 const ItemSchema = new GraphQLObjectType({
   name: "Item",
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    price: { type: GraphQLInt },
+    isClaimed: { type: GraphQLBoolean },
+    splitBetween: { type: GraphQLInt },
+    receiptId: { type: GraphQLInt }
+  })
+})
+
+// Input Type (Used for passing array into mutation)
+
+const ItemInput = new GraphQLInputObjectType({
+  name: "ItemInput",
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
@@ -39,6 +56,27 @@ const item = {
 }
 
 // Mutation
+const addItems = {
+  type: new GraphQLList(ItemSchema),
+  args: {
+    items: { type: GraphQLList(ItemInput) },
+    receiptId: { type: GraphQLID}
+  },
+  async resolve(parent, { items, receiptId }) {
+    let addedItems = [];
+    const currentReceipt = await Receipt.findByPk(receiptId);
+    for (let i = 0; i < items.length; i++) {
+      let item = await Item.create({
+        name: items[i].name,
+        price: items[i].price
+      })
+      await item.setReceipt(currentReceipt);
+      addedItems.push(item);
+    }
+    return addedItems;
+  }
+}
+
 const addItem = {
   type: ItemSchema,
   args: {
@@ -86,6 +124,7 @@ module.exports = {
   },
   itemMutations: {
     addItem,
+    addItems,
     claimItem,
     removeItem
   },
