@@ -36,9 +36,9 @@ const AuthType = new GraphQLObjectType({
 //Query
 const user = {
   type: UserSchema,
-  // args: { id: { type: GraphQLID } },
+  args: { id: { type: GraphQLID } },
   resolve(parent, args, context) {
-    return User.findByToken(context.authorization)
+    return User.findByPk(args.id)
   }
 }
 
