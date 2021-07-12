@@ -23,6 +23,9 @@ const User = db.define("users", {
   },
   lastName: {
     type: Sequelize.STRING
+  },
+  payPalMe: {
+    type: Sequelize.STRING
   }
 })
 
