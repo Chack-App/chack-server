@@ -6,7 +6,7 @@ const schema = require("../schema/")
 
 const { db, User } = require("./db/index")
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000;
 
 const app = express()
 module.exports = app
