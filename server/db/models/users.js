@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize")
 const db = require("../db")
 const jwt = require("jsonwebtoken")
+const JWT = process.env.JWT || require("../../../secrets");
 
 const bcrypt = require("bcrypt")
 
@@ -37,7 +38,7 @@ User.prototype.correctPassword = function (canidatePwd) {
 }
 
 User.prototype.generateToken = function () {
-  return jwt.sign({ id: this.id }, "badEnvironmentVariable")
+  return jwt.sign({ id: this.id }, JWT)
 }
 
 //class methods
@@ -53,7 +54,7 @@ User.authenticate = async function ({ email, password }) {
 
 User.findByToken = async function (token) {
   try {
-    const { id } = await jwt.verify(token, "badEnvironmentVariable")
+    const { id } = await jwt.verify(token, JWT)
     const user = User.findByPk(id)
     if (!user) {
       throw new Error("No User Found")
