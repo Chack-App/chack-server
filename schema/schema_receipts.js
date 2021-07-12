@@ -21,6 +21,7 @@ const ReceiptType = new GraphQLObjectType({
     isPaid: { type: GraphQLNonNull(GraphQLBoolean) },
     eventId: { type: GraphQLInt },
     cardDownId: { type: GraphQLInt },
+    cardDownPersonPayPalMe: { type: GraphQLString },
     items: { type: GraphQLList(ItemSchema)}
   })
 })
@@ -90,7 +91,7 @@ const addReceipt = {
   args: {
     name: { type: GraphQLString },
     eventId: { type: GraphQLInt },
-    cardDownId: { type: GraphQLInt }
+    cardDownId: { type: GraphQLInt },
   },
   async resolve(parent, { name, eventId, cardDownId }) {
     let newReceipt = await Receipt.create({
