@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize")
 const db = require("../db")
 const jwt = require("jsonwebtoken")
-const JWT = process.env.JWT || require("../../../secrets");
+const JWT = process.env.JWT || require("../../../secrets")
 
 const bcrypt = require("bcrypt")
 
