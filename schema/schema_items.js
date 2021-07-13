@@ -21,7 +21,7 @@ const ItemSchema = new GraphQLObjectType({
     isClaimed: { type: GraphQLBoolean },
     splitBetween: { type: GraphQLInt },
     receiptId: { type: GraphQLInt },
-    user: { type: GraphQLList(ItemUserSchema) }
+    users: { type: GraphQLList(ItemUserSchema) }
   })
 })
 
