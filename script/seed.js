@@ -122,11 +122,13 @@ async function seed() {
 
   let andrew = users[0]
   let jason = users[1]
+  let cody = users[3]
   let david = users[2]
   let cody = users[3]
 
   let fries = items[0]
   let calamari = items[1]
+
   let pokeNachos = items[2]
   let stella = items[3]
   let steak = items[4]
@@ -137,6 +139,7 @@ async function seed() {
   let pepperoni = items[9]
   let friedRice = items[10]
   let porkBuns = items[11]
+
 
   let dinner = events[0]
   let drinks = events[3]
@@ -156,6 +159,8 @@ async function seed() {
 
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
+  
+
   await pokeNachos.setReceipt(dinnerReceipt)
   await steak.setReceipt(dinnerReceipt)
   await penne.setReceipt(dinnerReceipt)
