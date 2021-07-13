@@ -100,14 +100,15 @@ const addEvent = {
   type: EventType,
   args: {
     eventName: { type: GraphQLString },
-    description: { type: GraphQLString }
+    description: { type: GraphQLString },
+    userId: { type: GraphQLID }
   },
-  async resolve(parent, { eventName, description }) {
+  async resolve(parent, { eventName, description, userId }) {
     let newEvent = await Event.create({
       eventName,
       description
     });
-    let currentUser = await User.findByPk(1);
+    let currentUser = await User.findByPk(userId);
     await currentUser.addEvent(newEvent);
     return newEvent;
   }
@@ -117,14 +118,15 @@ const joinEvent = {
   type: EventType,
   args: {
     passcode: { type: GraphQLString },
+    userId: { type: GraphQLID }
   },
-  async resolve(parent, { passcode }) {
+  async resolve(parent, { passcode, userId }) {
     const event = await Event.findOne({
       where: {
         passcode
       }
     })
-    const user = await User.findByPk(1);
+    const user = await User.findByPk(userId);
     await user.addEvent(event)
     return event;
   }
