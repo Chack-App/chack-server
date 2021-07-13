@@ -40,7 +40,7 @@ const receipt = {
         }
       ]
     })
-    await console.log(data.items[0].dataValues.users)
+    //await console.log(data.items[0].dataValues.users)
     return data
   }
 }
