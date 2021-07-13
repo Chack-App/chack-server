@@ -99,7 +99,7 @@ async function seed() {
     Item.create({
       name: "Pork Buns",
       price: 699
-    }),
+    })
   ])
 
   console.log(`seeded ${items.length} items`)
@@ -124,7 +124,6 @@ async function seed() {
   let jason = users[1]
   let cody = users[3]
   let david = users[2]
-  let cody = users[3]
 
   let fries = items[0]
   let calamari = items[1]
@@ -140,15 +139,14 @@ async function seed() {
   let friedRice = items[10]
   let porkBuns = items[11]
 
-
   let dinner = events[0]
   let drinks = events[3]
-  
+
   let dinnerReceipt = receipts[0]
   let drinksReceipt = receipts[1]
 
-//drinks event is to demonstrate event ready to be closed
-//dinner event is to demonstrate event that needs settling
+  //drinks event is to demonstrate event ready to be closed
+  //dinner event is to demonstrate event that needs settling
   await jason.addEvents([dinner, drinks])
   await david.addEvent([dinner])
   await andrew.addEvent([dinner])
@@ -159,7 +157,6 @@ async function seed() {
 
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
-  
 
   await pokeNachos.setReceipt(dinnerReceipt)
   await steak.setReceipt(dinnerReceipt)
@@ -170,11 +167,11 @@ async function seed() {
   await friedRice.setReceipt(dinnerReceipt)
   await porkBuns.setReceipt(dinnerReceipt)
 
-//for drinks receipt
+  //for drinks receipt
   await jason.setItems([stella, blueMoon])
   await stella.update({ isClaimed: true })
   await blueMoon.update({ isClaimed: true })
-  
+
   await blueMoon.setReceipt(drinksReceipt)
   await stella.setReceipt(drinksReceipt)
 
