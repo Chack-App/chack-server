@@ -1,6 +1,6 @@
 const graphql = require("graphql")
 const { Event, User, Receipt } = require("../server/db")
-// const { UserSchema } = require("./schema_users")
+
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -9,7 +9,17 @@ const {
   GraphQLNonNull,
   GraphQLList
 } = graphql
-const { ReceiptType } = require("./schema_receipts");
+const { ReceiptType } = require("./schema_receipts")
+
+const EventsUserSchema = new GraphQLObjectType({
+  name: "EventUser",
+  fields: () => ({
+    id: { type: GraphQLID },
+    email: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString }
+  })
+})
 
 const EventType = new GraphQLObjectType({
   name: "Event",
@@ -21,7 +31,7 @@ const EventType = new GraphQLObjectType({
     passcode: { type: GraphQLString },
     isComplete: { type: GraphQLNonNull(GraphQLBoolean) },
     receipts: { type: GraphQLList(ReceiptType) },
-    // users: { type: GraphQLList(UserSchema) }
+    users: { type: GraphQLList(EventsUserSchema) }
     // In the future we should figure out how to setup a createdAt (Date) and
     // completedAt (Date) field so we can query events by dates
   })
@@ -32,14 +42,19 @@ const event = {
   description: "Lists a single event by its ID",
   type: EventType,
   args: { id: { type: GraphQLID } },
-  resolve(parent, args) {
-    return Event.findByPk(args.id, {
+  async resolve(parent, args) {
+    const event = await Event.findByPk(args.id, {
       include: [
         {
           model: Receipt
+        },
+        {
+          model: User
         }
       ]
     })
+    console.log(event)
+    return event
   }
 }
 
@@ -54,13 +69,13 @@ const activeEventReceipts = {
   args: { id: { type: GraphQLID } },
   async resolve(parent, args) {
     let activeEventReceipts = await Event.findOne({
-      where:{
+      where: {
         id: args.id
       },
       include: [
         {
           model: Receipt,
-          where:{
+          where: {
             isPaid: false
           }
         }
@@ -70,19 +85,18 @@ const activeEventReceipts = {
   }
 }
 
-
 const pastEventReceipts = {
   type: new GraphQLList(ReceiptType),
   args: { id: { type: GraphQLID } },
   async resolve(parent, args) {
     let pastEventReceipts = await Event.findOne({
-      where:{
+      where: {
         id: args.id
       },
       include: [
         {
           model: Receipt,
-          where:{
+          where: {
             isPaid: true
           }
         }
@@ -91,9 +105,6 @@ const pastEventReceipts = {
     return pastEventReceipts.receipts
   }
 }
-
-
-
 
 // Mutation
 const addEvent = {
@@ -106,17 +117,17 @@ const addEvent = {
     let newEvent = await Event.create({
       eventName,
       description
-    });
-    let currentUser = await User.findByPk(1);
-    await currentUser.addEvent(newEvent);
-    return newEvent;
+    })
+    let currentUser = await User.findByPk(1)
+    await currentUser.addEvent(newEvent)
+    return newEvent
   }
-};
+}
 
 const joinEvent = {
   type: EventType,
   args: {
-    passcode: { type: GraphQLString },
+    passcode: { type: GraphQLString }
   },
   async resolve(parent, { passcode }) {
     const event = await Event.findOne({
@@ -124,11 +135,10 @@ const joinEvent = {
         passcode
       }
     })
-    const user = await User.findByPk(1);
+    const user = await User.findByPk(1)
     await user.addEvent(event)
-    return event;
+    return event
   }
-
 }
 
 module.exports = {
