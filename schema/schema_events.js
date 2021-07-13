@@ -117,14 +117,15 @@ const joinEvent = {
   type: EventType,
   args: {
     passcode: { type: GraphQLString },
+    userId: { type: GraphQLID }
   },
-  async resolve(parent, { passcode }) {
+  async resolve(parent, { passcode, userId }) {
     const event = await Event.findOne({
       where: {
         passcode
       }
     })
-    const user = await User.findByPk(1);
+    const user = await User.findByPk(userId);
     await user.addEvent(event)
     return event;
   }
