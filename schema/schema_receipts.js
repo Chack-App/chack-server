@@ -1,6 +1,6 @@
 const graphql = require("graphql")
-const { Receipt, Event, Item } = require("../server/db")
-const { ItemSchema } = require("./schema_items") 
+const { Receipt, Event, Item, User } = require("../server/db")
+const { ItemSchema } = require("./schema_items")
 // const { UserSchema } = require("./schema_users")
 const {
   GraphQLObjectType,
@@ -22,7 +22,7 @@ const ReceiptType = new GraphQLObjectType({
     eventId: { type: GraphQLInt },
     cardDownId: { type: GraphQLInt },
     cardDownPersonPayPalMe: { type: GraphQLString },
-    items: { type: GraphQLList(ItemSchema)}
+    items: { type: GraphQLList(ItemSchema) }
   })
 })
 
@@ -31,12 +31,17 @@ const receipt = {
   description: "Lists a single receipt by its ID",
   type: ReceiptType,
   args: { id: { type: GraphQLID } },
-  resolve(parent, args) {
-    return Receipt.findByPk(args.id, {
-      include: [{
-        model: Item
-      }]
+  async resolve(parent, args) {
+    const data = await Receipt.findByPk(args.id, {
+      include: [
+        {
+          model: Item,
+          include: [User]
+        }
+      ]
     })
+    //await console.log(data.items[0].dataValues.users)
+    return data
   }
 }
 
@@ -91,7 +96,7 @@ const addReceipt = {
   args: {
     name: { type: GraphQLString },
     eventId: { type: GraphQLInt },
-    cardDownId: { type: GraphQLInt },
+    cardDownId: { type: GraphQLInt }
   },
   async resolve(parent, { name, eventId, cardDownId }) {
     let newReceipt = await Receipt.create({

@@ -87,9 +87,11 @@ async function seed() {
   console.log("setting assosiations")
 
   let jason = users[1]
+  let cody = users[3]
   let david = users[2]
   let fries = items[0]
   let calamari = items[1]
+  let poke = items[2]
   let beer = items[3]
   let dinner = events[0]
   let drinks = events[3]
@@ -97,13 +99,16 @@ async function seed() {
   let drinksReceipt = receipts[1]
 
   await jason.setItems([fries, beer, calamari])
+  await cody.setItems([poke])
 
   await fries.update({ isClaimed: true })
   await beer.update({ isClaimed: true })
   await calamari.update({ isClaimed: true })
+  await poke.update({ isClaimed: true })
 
   await jason.addEvents([dinner, drinks])
   await david.addEvent([dinner])
+  await cody.addEvent([drinks])
 
   await dinnerReceipt.setEvent(dinner)
   await drinksReceipt.setEvent(drinks)
@@ -111,6 +116,7 @@ async function seed() {
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
   await beer.setReceipt(drinksReceipt)
+  await poke.setReceipt(drinksReceipt)
 
   console.log(`seeded successfully`)
 }
