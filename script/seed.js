@@ -175,6 +175,10 @@ async function seed() {
   await blueMoon.setReceipt(drinksReceipt)
   await stella.setReceipt(drinksReceipt)
 
+  // update cardDownID dinner user
+  await dinnerReceipt.update({ cardDownId: jason.id })
+  await drinksReceipt.update({ cardDownId: jason.id })
+
   console.log(`seeded successfully`)
 }
 
