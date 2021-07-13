@@ -16,7 +16,8 @@ const UserSchema = new GraphQLObjectType({
     id: { type: GraphQLID },
     email: { type: GraphQLString },
     firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString }
+    lastName: { type: GraphQLString },
+    payPalMe: { type: GraphQLString }
   })
 })
 
@@ -27,16 +28,17 @@ const AuthType = new GraphQLObjectType({
     id: { type: GraphQLID },
     email: { type: GraphQLString },
     firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString }
+    lastName: { type: GraphQLString },
+    payPalMe: { type: GraphQLString }
   })
 })
 
 //Query
 const user = {
   type: UserSchema,
-  // args: { id: { type: GraphQLID } },
+  args: { id: { type: GraphQLID } },
   resolve(parent, args, context) {
-    return User.findByToken(context.authorization)
+    return User.findByPk(args.id)
   }
 }
 
@@ -115,12 +117,12 @@ const login = {
       email: args.email,
       password: args.password
     })
-    const { email, firstName, lastName, id } = await User.findOne({
+    const { email, firstName, lastName, payPalMe, id } = await User.findOne({
       where: {
         email: args.email
       }
     })
-    return { token, email, firstName, lastName, id }
+    return { token, email, firstName, lastName, payPalMe, id }
   }
 }
 
@@ -130,7 +132,8 @@ const signup = {
     email: { type: GraphQLString },
     password: { type: GraphQLString },
     firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString }
+    lastName: { type: GraphQLString },
+    payPalMe: { type: GraphQLString }
   },
   async resolve(parent, args) {
     const user = await User.findOne({
@@ -140,22 +143,22 @@ const signup = {
     if (user) {
       throw new Error("This user already exists")
     }
-    const { email, firstName, lastName, id } = await User.create({
+    const { email, firstName, lastName, payPalMe, id } = await User.create({
       email: args.email,
       password: args.password,
       firstName: args.firstName,
-      lastName: args.lastName
+      lastName: args.lastName,
+      payPalMe: args.payPalMe
     })
     const token = await User.authenticate({
       email: args.email,
       password: args.password
     })
-    return { token, email, firstName, lastName, id }
+    return { token, email, firstName, lastName, payPalMe, id }
   }
 }
 
 module.exports = {
-  UserSchema,
   userQueries: {
     user,
     userEvents,
@@ -165,5 +168,6 @@ module.exports = {
   userMutations: {
     login,
     signup
-  }
+  },
+  UserSchema
 }
