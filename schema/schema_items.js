@@ -103,24 +103,32 @@ const addItem = {
   }
 }
 
-const claimItems = {
+// toggle isClaimed state
+const claimItem = {
   type: ItemSchema,
   args: {
-    itemArray: { type: GraphQLList(ItemInput) },
-    userId: { type: GraphQLID}
+    itemId: { type: GraphQLID },
+    userId: { type: GraphQLID }
   },
   async resolve(parent, args) {
-   await args.itemArray.forEact(item =>{
-      let claimedItem = Item.findByPk(item.id)
+    let claimedItem = await Item.findByPk(args.itemId)
+    let user = await User.findByPk(args.userId)
+    let itemUser = await claimedItem.getUsers()
+    if (claimedItem.isClaimed) {
+      console.log('is claimed')
+      if (user.id===itemUser[0].id) {
+        console.log('right user')
+        claimedItem.isClaimed = false
+        claimedItem.removeUser(user)
+      }
+    } else {
+      console.log('reached else')
       claimedItem.isClaimed = true
-      
-      let user = User.findByPk(args.userId)
-      claimedItem.setUser(user)
-      
-      claimedItem.save()
-    })
-    //console.log(claimedItem)
-    return args.itemArray
+      claimedItem.addUser(user)
+    }
+    claimedItem.save()
+
+    return claimedItem
   }
 }
 
@@ -143,7 +151,7 @@ module.exports = {
   itemMutations: {
     addItem,
     addItems,
-    claimItems,
+    claimItem,
     removeItem
   },
   ItemSchema
