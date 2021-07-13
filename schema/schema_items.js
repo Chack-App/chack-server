@@ -1,5 +1,5 @@
 const graphql = require("graphql")
-const { Item, Receipt } = require("../server/db/")
+const { Item, Receipt, User } = require("../server/db/")
 const {
   GraphQLObjectType,
   GraphQLInputObjectType,
@@ -92,17 +92,24 @@ const addItem = {
   }
 }
 
-const claimItem = {
+const claimItems = {
   type: ItemSchema,
   args: {
-    id: { type: GraphQLID }
+    itemArray: { type: GraphQLList(ItemInput) },
+    userId: { type: GraphQLID}
   },
   async resolve(parent, args) {
-    let claimedItem = await Item.findByPk(args.id)
-    console.log(claimedItem)
-    claimedItem.isClaimed = true
-    claimedItem.save()
-    return claimedItem
+   await args.itemArray.forEact(item =>{
+      let claimedItem = Item.findByPk(item.id)
+      claimedItem.isClaimed = true
+      
+      let user = User.findByPk(args.userId)
+      claimedItem.setUser(user)
+      
+      claimedItem.save()
+    })
+    //console.log(claimedItem)
+    return args.itemArray
   }
 }
 
@@ -125,7 +132,7 @@ module.exports = {
   itemMutations: {
     addItem,
     addItems,
-    claimItem,
+    claimItems,
     removeItem
   },
   ItemSchema
