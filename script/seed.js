@@ -38,7 +38,7 @@ async function seed() {
     Event.create({
       eventName: "Dinner",
       description: "David's Birthday",
-      isComplete: true
+      isComplete: false
     }),
     Event.create({
       eventName: "Poker Night",
@@ -67,7 +67,39 @@ async function seed() {
     Item.create({
       name: "Stella Artois",
       price: 699
-    })
+    }),
+    Item.create({
+      name: "Steak",
+      price: 3999
+    }),
+    Item.create({
+      name: "Penne alla Vodka",
+      price: 2399
+    }),
+    Item.create({
+      name: "Tuna Roll",
+      price: 899
+    }),
+    Item.create({
+      name: "Blue Moon",
+      price: 699
+    }),
+    Item.create({
+      name: "Onion Rings",
+      price: 999
+    }),
+    Item.create({
+      name: "Pepperoni Slice",
+      price: 699
+    }),
+    Item.create({
+      name: "Fried Rice",
+      price: 1699
+    }),
+    Item.create({
+      name: "Pork Buns",
+      price: 699
+    }),
   ])
 
   console.log(`seeded ${items.length} items`)
@@ -75,48 +107,76 @@ async function seed() {
   const receipts = await Promise.all([
     Receipt.create({
       name: "Dinner",
-      isPaid: false
+      isPaid: false,
+      cardDownId: 4
     }),
     Receipt.create({
       name: "Drinks",
-      isPaid: false
+      isPaid: false,
+      cardDownId: 2
     })
   ])
   console.log(`seeded ${receipts.length} receipts`)
 
   console.log("setting assosiations")
 
+  let andrew = users[0]
   let jason = users[1]
   let cody = users[3]
   let david = users[2]
+  let cody = users[3]
+
   let fries = items[0]
   let calamari = items[1]
-  let poke = items[2]
-  let beer = items[3]
+
+  let pokeNachos = items[2]
+  let stella = items[3]
+  let steak = items[4]
+  let penne = items[5]
+  let tunaRoll = items[6]
+  let blueMoon = items[7]
+  let onionRings = items[8]
+  let pepperoni = items[9]
+  let friedRice = items[10]
+  let porkBuns = items[11]
+
+
   let dinner = events[0]
   let drinks = events[3]
+  
   let dinnerReceipt = receipts[0]
   let drinksReceipt = receipts[1]
 
-  await jason.setItems([fries, beer, calamari])
-  await cody.setItems([poke])
-
-  await fries.update({ isClaimed: true })
-  await beer.update({ isClaimed: true })
-  await calamari.update({ isClaimed: true })
-  await poke.update({ isClaimed: true })
-
+//drinks event is to demonstrate event ready to be closed
+//dinner event is to demonstrate event that needs settling
   await jason.addEvents([dinner, drinks])
   await david.addEvent([dinner])
-  await cody.addEvent([drinks])
+  await andrew.addEvent([dinner])
+  await cody.addEvent([dinner])
 
   await dinnerReceipt.setEvent(dinner)
   await drinksReceipt.setEvent(drinks)
 
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
-  await beer.setReceipt(drinksReceipt)
-  await poke.setReceipt(drinksReceipt)
+  
+
+  await pokeNachos.setReceipt(dinnerReceipt)
+  await steak.setReceipt(dinnerReceipt)
+  await penne.setReceipt(dinnerReceipt)
+  await tunaRoll.setReceipt(dinnerReceipt)
+  await onionRings.setReceipt(dinnerReceipt)
+  await pepperoni.setReceipt(dinnerReceipt)
+  await friedRice.setReceipt(dinnerReceipt)
+  await porkBuns.setReceipt(dinnerReceipt)
+
+//for drinks receipt
+  await jason.setItems([stella, blueMoon])
+  await stella.update({ isClaimed: true })
+  await blueMoon.update({ isClaimed: true })
+  
+  await blueMoon.setReceipt(drinksReceipt)
+  await stella.setReceipt(drinksReceipt)
 
   console.log(`seeded successfully`)
 }
