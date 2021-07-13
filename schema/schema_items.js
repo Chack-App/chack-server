@@ -20,7 +20,18 @@ const ItemSchema = new GraphQLObjectType({
     price: { type: GraphQLInt },
     isClaimed: { type: GraphQLBoolean },
     splitBetween: { type: GraphQLInt },
-    receiptId: { type: GraphQLInt }
+    receiptId: { type: GraphQLInt },
+    user: { type: GraphQLList(ItemUserSchema) }
+  })
+})
+
+const ItemUserSchema = new GraphQLObjectType({
+  name: "ItemUser",
+  fields: () => ({
+    id: { type: GraphQLID },
+    email: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString }
   })
 })
 
@@ -60,20 +71,20 @@ const addItems = {
   type: new GraphQLList(ItemSchema),
   args: {
     items: { type: GraphQLList(ItemInput) },
-    receiptId: { type: GraphQLID}
+    receiptId: { type: GraphQLID }
   },
   async resolve(parent, { items, receiptId }) {
-    let addedItems = [];
-    const currentReceipt = await Receipt.findByPk(receiptId);
+    let addedItems = []
+    const currentReceipt = await Receipt.findByPk(receiptId)
     for (let i = 0; i < items.length; i++) {
       let item = await Item.create({
         name: items[i].name,
         price: items[i].price
       })
-      await item.setReceipt(currentReceipt);
-      addedItems.push(item);
+      await item.setReceipt(currentReceipt)
+      addedItems.push(item)
     }
-    return addedItems;
+    return addedItems
   }
 }
 
