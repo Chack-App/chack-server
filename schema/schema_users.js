@@ -158,6 +158,26 @@ const signup = {
   }
 }
 
+const updateUser = {
+  type: AuthType,
+  args: {
+    email: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    payPalMe: { type: GraphQLString }
+  },
+  async resolve(parent, args) {
+    const user = await User.findOne({
+      where: { email: args.email }
+    })
+    user.firstName = args.firstName
+    user.lastName = args.lastName
+    user.payPalMe = args.payPalMe
+    await user.save()
+    return user
+  }
+}
+
 module.exports = {
   userQueries: {
     user,
@@ -167,7 +187,8 @@ module.exports = {
   },
   userMutations: {
     login,
-    signup
+    signup,
+    updateUser
   },
   UserSchema
 }
