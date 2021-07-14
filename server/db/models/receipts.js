@@ -9,6 +9,9 @@ const Receipt = db.define("receipts", {
   cardDownId: {
     type: Sequelize.INTEGER
   },
+  cardDownHandle: {
+    type: Sequelize.STRING
+  },
   isPaid: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
@@ -18,6 +21,22 @@ const Receipt = db.define("receipts", {
     type: Sequelize.BOOLEAN,
     allowNull: false,
     defaultValue: false
+  },
+  tax: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    validate: {
+      isNumeric: true
+    }
+  },
+  tip: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    validate: {
+      isNumeric: true,
+      min: 0,
+      max: 100
+    }
   }
 })
 

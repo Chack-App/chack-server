@@ -18,10 +18,13 @@ const ReceiptType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLNonNull(GraphQLID) },
     name: { type: GraphQLNonNull(GraphQLString) },
+    cardDownHandle: { type: GraphQLNonNull(GraphQLString) },
     isPaid: { type: GraphQLNonNull(GraphQLBoolean) },
     isApproved: { type: GraphQLNonNull(GraphQLBoolean) },
     eventId: { type: GraphQLInt },
     cardDownId: { type: GraphQLInt },
+    tax: { type: GraphQLInt },
+    tip: { type: GraphQLInt },
     cardDownPersonPayPalMe: { type: GraphQLString },
     items: { type: GraphQLList(ItemSchema) }
   })
@@ -100,10 +103,14 @@ const addReceipt = {
     cardDownId: { type: GraphQLInt }
   },
   async resolve(parent, { name, eventId, cardDownId }) {
+    let cardDownUser = await User.findByPk(cardDownId)
+    const cardDownHandle = cardDownUser.payPalMe
+
     let newReceipt = await Receipt.create({
       name,
       eventId,
-      cardDownId
+      cardDownId,
+      cardDownHandle
     })
     let currentEvent = await Event.findByPk(eventId)
     await currentEvent.addReceipt(newReceipt)
@@ -131,11 +138,15 @@ const payReceipt = {
 const setApproved = {
   type: ReceiptType,
   args: {
-    id: { type: GraphQLID }
+    id: { type: GraphQLID },
+    tax: { type: GraphQLInt },
+    tip: { type: GraphQLInt }
   },
   async resolve(parent, args) {
     let receipt = await Receipt.findByPk(args.id)
     receipt.isApproved = true
+    receipt.tax = args.tax
+    receipt.tip = args.tip
     receipt.save()
     return receipt
   }

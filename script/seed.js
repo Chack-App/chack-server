@@ -108,7 +108,8 @@ async function seed() {
     Receipt.create({
       name: "Dinner",
       isPaid: false,
-      cardDownId: 4
+      cardDownId: 4,
+      cardDownHandle: "JasonChen"
     }),
     Receipt.create({
       name: "Drinks",
