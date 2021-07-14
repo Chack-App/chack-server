@@ -173,7 +173,6 @@ const updateUser = {
     user.firstName = args.firstName
     user.lastName = args.lastName
     user.payPalMe = args.payPalMe
-    console.log(user)
     await user.save()
     return user
   }
