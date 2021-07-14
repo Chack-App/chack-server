@@ -1,22 +1,46 @@
-const Sequelize = require("sequelize");
-const db = require("../db");
+const Sequelize = require("sequelize")
+const db = require("../db")
 
 const Receipt = db.define("receipts", {
   name: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: false
   },
   cardDownId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.INTEGER
+  },
+  cardDownHandle: {
+    type: Sequelize.STRING
   },
   isPaid: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
-    defaultValue: false,
+    defaultValue: false
   },
-});
+  isApproved: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  tax: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    validate: {
+      isNumeric: true
+    }
+  },
+  tip: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    validate: {
+      isNumeric: true,
+      min: 0,
+      max: 100
+    }
+  }
+})
 
-module.exports = Receipt;
+module.exports = Receipt
 
 // const completeReceipt = (receipt) => {
 //     if(receipt.isPaid === true){      // Prevent updating receipts that have already been completed
@@ -28,8 +52,5 @@ module.exports = Receipt;
 //     }
 // };
 
-
 // Receipt.beforeUpdate(completeReceipt)
 // Receipt.beforeBulkUpdate((receipts) => receipts.map(completeReceipt))
-
-
