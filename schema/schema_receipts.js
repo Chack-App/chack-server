@@ -19,6 +19,7 @@ const ReceiptType = new GraphQLObjectType({
     id: { type: GraphQLNonNull(GraphQLID) },
     name: { type: GraphQLNonNull(GraphQLString) },
     isPaid: { type: GraphQLNonNull(GraphQLBoolean) },
+    isApproved: { type: GraphQLNonNull(GraphQLBoolean) },
     eventId: { type: GraphQLInt },
     cardDownId: { type: GraphQLInt },
     cardDownPersonPayPalMe: { type: GraphQLString },
@@ -127,6 +128,19 @@ const payReceipt = {
   }
 }
 
+const setApproved = {
+  type: ReceiptType,
+  args: {
+    id: { type: GraphQLID }
+  },
+  async resolve(parent, args) {
+    let receipt = await Receipt.findByPk(args.id)
+    receipt.isApproved = true
+    receipt.save()
+    return receipt
+  }
+}
+
 module.exports = {
   receiptQueries: {
     receipt,
@@ -136,7 +150,8 @@ module.exports = {
   },
   receiptMutations: {
     addReceipt,
-    payReceipt
+    payReceipt,
+    setApproved
   },
   ReceiptType
 }
