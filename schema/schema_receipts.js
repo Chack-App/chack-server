@@ -152,6 +152,19 @@ const setApproved = {
   }
 }
 
+const closeReceipt = {
+  type: ReceiptType,
+  args: {
+    id: { type: GraphQLID },
+  },
+  async resolve(parent, args) {
+    let receipt = await Receipt.findByPk(args.id)
+    receipt.isPaid= true
+    receipt.save()
+    return receipt
+  }
+}
+
 module.exports = {
   receiptQueries: {
     receipt,
@@ -162,7 +175,8 @@ module.exports = {
   receiptMutations: {
     addReceipt,
     payReceipt,
-    setApproved
+    setApproved,
+    closeReceipt
   },
   ReceiptType
 }
