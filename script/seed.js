@@ -10,25 +10,29 @@ async function seed() {
       email: "alars@example.com",
       password: "123",
       firstName: "Andrew",
-      lastName: "Larsen"
+      lastName: "Larsen",
+      payPalMe: "AndrewLarsen"
     }),
     User.create({
       email: "jchen@example.com",
       password: "123",
       firstName: "Jason",
-      lastName: "Chen"
+      lastName: "Chen",
+      payPalMe: "JasonChen"
     }),
     User.create({
       email: "ddege@example.com",
       password: "123",
       firstName: "David",
-      lastName: "Degenstein"
+      lastName: "Degenstein",
+      payPalMe: "DavidDegenstein"
     }),
     User.create({
       email: "cswit@example.com",
       password: "123",
       firstName: "Cody",
-      lastName: "Swithenbank"
+      lastName: "Swithenbank",
+      payPalMe: "CodySwithenbank"
     })
   ])
 
@@ -43,7 +47,7 @@ async function seed() {
     Event.create({
       eventName: "Poker Night",
       description: "Take it to the Town!!!",
-      isComplete: false
+      isComplete: true
     }),
     Event.create({ eventName: "Brunch", isComplete: false }),
     Event.create({ eventName: "Drinks", isComplete: false })
@@ -99,7 +103,23 @@ async function seed() {
     Item.create({
       name: "Pork Buns",
       price: 699
-    })
+    }),
+    Item.create({
+      name: "David's Buy In",
+      price: 75
+    }),
+    Item.create({
+      name: "Cody's Buy In",
+      price: 100
+    }),
+    Item.create({
+      name: "Jason's Buy In",
+      price: 150
+    }),
+    Item.create({
+      name: "Andrew's Buy In",
+      price: 50
+    }),
   ])
 
   console.log(`seeded ${items.length} items`)
@@ -109,11 +129,15 @@ async function seed() {
       name: "Dinner",
       isPaid: false,
       cardDownId: 4,
-      cardDownHandle: "JasonChen"
     }),
     Receipt.create({
       name: "Drinks",
       isPaid: false,
+      cardDownId: 2,
+    }),
+    Receipt.create({
+      name: "Poker Night 7/14/21",
+      isPaid: true,
       cardDownId: 2
     })
   ])
@@ -140,21 +164,30 @@ async function seed() {
   let friedRice = items[10]
   let porkBuns = items[11]
 
+  let davidBuyIn = items[12]
+  let codyBuyIn = items[13]
+  let jasonBuyIn = items[14]
+  let andrewBuyIn = items[15]
+
   let dinner = events[0]
+  let pokerNight = events[1]
   let drinks = events[3]
 
   let dinnerReceipt = receipts[0]
   let drinksReceipt = receipts[1]
+  let pokerNightReceipt = receipts[2]
 
   //drinks event is to demonstrate event ready to be closed
   //dinner event is to demonstrate event that needs settling
-  await jason.addEvents([dinner, drinks])
-  await david.addEvent([dinner])
-  await andrew.addEvent([dinner])
-  await cody.addEvent([dinner])
+  //poker night event is to demonstrate past events
+  await jason.addEvents([dinner, drinks, pokerNight])
+  await david.addEvent([dinner, pokerNight])
+  await andrew.addEvent([dinner, pokerNight])
+  await cody.addEvent([dinner, pokerNight])
 
   await dinnerReceipt.setEvent(dinner)
   await drinksReceipt.setEvent(drinks)
+  await pokerNightReceipt.setEvent(pokerNight)
 
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
@@ -176,9 +209,30 @@ async function seed() {
   await blueMoon.setReceipt(drinksReceipt)
   await stella.setReceipt(drinksReceipt)
 
+  // for poker night receipt
+  await jason.setItems([jasonBuyIn])
+  await jasonBuyIn.update({ isClaimed: true })
+  await david.setItems([davidBuyIn])
+  await davidBuyIn.update({ isClaimed: true })
+  await cody.setItems([codyBuyIn])
+  await codyBuyIn.update({ isClaimed: true })
+  await andrew.setItems(andrewBuyIn)
+  await andrewBuyIn.update({ isClaimed: true })
+
+  await davidBuyIn.setReceipt(pokerNightReceipt)
+  await codyBuyIn.setReceipt(pokerNightReceipt)
+  await jasonBuyIn.setReceipt(pokerNightReceipt)
+  await andrewBuyIn.setReceipt(pokerNightReceipt)
+
   // update cardDownID dinner user
   await dinnerReceipt.update({ cardDownId: jason.id })
+  await dinnerReceipt.update({ cardDownHandle: jason.payPalMe })
   await drinksReceipt.update({ cardDownId: jason.id })
+  await drinksReceipt.update({ cardDownHandle: jason.payPalMe })
+  await pokerNightReceipt.update({ cardDownId: jason.id })
+  await pokerNightReceipt.update({ cardDownHandle: jason.payPalMe })
+
+  
 
   console.log(`seeded successfully`)
 }
