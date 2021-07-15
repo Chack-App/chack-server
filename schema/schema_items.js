@@ -115,14 +115,11 @@ const claimItem = {
     let user = await User.findByPk(args.userId)
     let itemUser = await claimedItem.getUsers()
     if (claimedItem.isClaimed) {
-      console.log('is claimed')
       if (user.id===itemUser[0].id) {
-        console.log('right user')
         claimedItem.isClaimed = false
         claimedItem.removeUser(user)
       }
     } else {
-      console.log('reached else')
       claimedItem.isClaimed = true
       claimedItem.addUser(user)
     }
