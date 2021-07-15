@@ -7,7 +7,8 @@ const {
   GraphQLID,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLNonNull
 } = graphql
 
 // Item Type
@@ -115,7 +116,7 @@ const claimItem = {
     let user = await User.findByPk(args.userId)
     let itemUser = await claimedItem.getUsers()
     if (claimedItem.isClaimed) {
-      if (user.id===itemUser[0].id) {
+      if (user.id === itemUser[0].id) {
         claimedItem.isClaimed = false
         claimedItem.removeUser(user)
       }
@@ -140,6 +141,43 @@ const removeItem = {
   }
 }
 
+const updateItem = {
+  type: ItemSchema,
+  args: {
+    id: { type: GraphQLID },
+    name: { type: GraphQLNonNull(GraphQLString) },
+    price: { type: GraphQLNonNull(GraphQLInt) }
+  },
+  async resolve(parent, args) {
+    const currentItem = await Item.findByPk(args.id)
+    currentItem.name = args.name
+    currentItem.price = args.price
+    await currentItem.save()
+    return currentItem
+  }
+}
+
+const updateItems = {
+  type: new GraphQLList(ItemSchema),
+  args: {
+    items: { type: GraphQLList(ItemInput) },
+    receiptId: { type: GraphQLID }
+  },
+  async resolve(parent, { items, receiptId }) {
+    const oldReceipt = await Receipt.findByPk(receiptId, {
+      include: { model: Item }
+    })
+    console.log(oldReceipt.dataValues.items)
+    for (let i = 0; i < items.length; i++) {
+      await oldReceipt.items[i].update({
+        name: items[i].name,
+        price: items[i].price
+      })
+    }
+    return oldReceipt
+  }
+}
+
 module.exports = {
   itemQueries: {
     item,
@@ -149,7 +187,8 @@ module.exports = {
     addItem,
     addItems,
     claimItem,
-    removeItem
+    removeItem,
+    updateItems
   },
   ItemSchema
 }
