@@ -138,6 +138,7 @@ async function seed() {
     Receipt.create({
       name: "Poker Night 7/14/21",
       isPaid: true,
+      isApproved: true,
       cardDownId: 2
     })
   ])

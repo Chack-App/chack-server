@@ -31,7 +31,7 @@ const EventType = new GraphQLObjectType({
     passcode: { type: GraphQLString },
     isComplete: { type: GraphQLNonNull(GraphQLBoolean) },
     receipts: { type: GraphQLList(ReceiptType) },
-    users: { type: GraphQLList(EventsUserSchema) }
+    users: { type: GraphQLList(EventsUserSchema) },
     // In the future we should figure out how to setup a createdAt (Date) and
     // completedAt (Date) field so we can query events by dates
   })
@@ -144,6 +144,20 @@ const joinEvent = {
   }
 }
 
+const closeEvent = {
+  type: EventType,
+  args: {
+    id: { type: GraphQLID },
+  },
+  async resolve(parent, args) {
+    let event = await Event.findByPk(args.id)
+    event.isComplete = true
+    //event.completedAt = Date.now() // in order to do this we need to define a GraphQLScalarType
+    event.save()
+    return event
+  }
+}
+
 module.exports = {
   eventQueries: {
     event,
@@ -153,7 +167,8 @@ module.exports = {
   },
   eventMutations: {
     addEvent,
-    joinEvent
+    joinEvent,
+    closeEvent
   },
   EventType
 }

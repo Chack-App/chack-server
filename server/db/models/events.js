@@ -28,16 +28,16 @@ const Event = db.define("events", {
 module.exports = Event;
 
 //class methods
-const completeEvent = (event) => {
-    if(event.isComplete === true){      // Prevent updating events that have already been completed
-        throw new Error("You cannot update a completed event")
-    }
-    else if (event.changed("isComplete")) {   // mark event as completed and add completion date
-        // if any active receipts remain in Event throw Error!!!!!
-        event.isComplete = true;
-        event.completedAt = Date.now()
-    }
-};
+// const completeEvent = (event) => {
+//     if(event.isComplete === true){      // Prevent updating events that have already been completed
+//         throw new Error("You cannot update a completed event")
+//     }
+//     else if (event.changed("isComplete")) {   // mark event as completed and add completion date
+//         // if any active receipts remain in Event throw Error!!!!!
+//         event.isComplete = true;
+//         event.completedAt = Date.now()
+//     }
+// };
 
 const generatePasscode = async (event) => {
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -59,6 +59,6 @@ const generatePasscode = async (event) => {
   throw new Error('Unique passcode not available');
 }
 
-Event.beforeUpdate(completeEvent)
+// Event.beforeUpdate(completeEvent)
+// Event.beforeBulkUpdate((events) => events.map(completeEvent))
 Event.beforeCreate(generatePasscode)
-Event.beforeBulkUpdate((events) => events.map(completeEvent))
