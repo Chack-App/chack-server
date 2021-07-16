@@ -7,7 +7,8 @@ const {
   GraphQLID,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLNonNull
 } = graphql
 
 // Item Type
@@ -115,7 +116,7 @@ const claimItem = {
     let user = await User.findByPk(args.userId)
     let itemUser = await claimedItem.getUsers()
     if (claimedItem.isClaimed) {
-      if (user.id===itemUser[0].id) {
+      if (user.id === itemUser[0].id) {
         claimedItem.isClaimed = false
         claimedItem.removeUser(user)
       }
@@ -140,6 +141,55 @@ const removeItem = {
   }
 }
 
+const updateItem = {
+  type: ItemSchema,
+  args: {
+    id: { type: GraphQLID },
+    name: { type: GraphQLNonNull(GraphQLString) },
+    price: { type: GraphQLNonNull(GraphQLInt) }
+  },
+  async resolve(parent, args) {
+    const currentItem = await Item.findByPk(args.id)
+    currentItem.name = args.name
+    currentItem.price = args.price
+    await currentItem.save()
+    return currentItem
+  }
+}
+
+const addOrUpdateItems = {
+  type: new GraphQLList(ItemSchema),
+  args: {
+    items: { type: GraphQLList(ItemInput) },
+    receiptId: { type: GraphQLID }
+  },
+  async resolve(parent, { items, receiptId }) {
+    let newItemArr = []
+    console.log("original item arr -->", items)
+    const currentReceipt = await Receipt.findByPk(receiptId)
+    for (let i = 0; i < items.length; i++) {
+      console.log("enter for loop")
+      console.log(items[i], items[i].id, items[i].id === undefined)
+      if (items[i].id) {
+        const itemToUpdate = await Item.findByPk(items[i].id)
+        console.log("updating", itemToUpdate.name)
+        const updatedItem = await itemToUpdate.update({
+          name: items[i].name,
+          price: items[i].price
+        })
+        newItemArr.push(updatedItem)
+      } else {
+        console.log("creating item -->", items[i].name)
+        const itemToAdd = await Item.create(items[i])
+        await itemToAdd.setReceipt(currentReceipt)
+        newItemArr.push(itemToAdd)
+      }
+    }
+    console.log("New Item Arr -->", newItemArr)
+    return newItemArr
+  }
+}
+
 module.exports = {
   itemQueries: {
     item,
@@ -149,7 +199,8 @@ module.exports = {
     addItem,
     addItems,
     claimItem,
-    removeItem
+    removeItem,
+    addOrUpdateItems
   },
   ItemSchema
 }

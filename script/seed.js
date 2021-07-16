@@ -40,7 +40,7 @@ async function seed() {
 
   const events = await Promise.all([
     Event.create({
-      eventName: "Dinner",
+      eventName: "Boys Night Out",
       description: "David's Birthday",
       isComplete: false
     }),
@@ -50,7 +50,6 @@ async function seed() {
       isComplete: true
     }),
     Event.create({ eventName: "Brunch", isComplete: false }),
-    Event.create({ eventName: "Drinks", isComplete: false })
   ])
 
   console.log(`seeded ${events.length} events`)
@@ -106,20 +105,49 @@ async function seed() {
     }),
     Item.create({
       name: "David's Buy In",
-      price: 75
+      price: 7500
     }),
     Item.create({
       name: "Cody's Buy In",
-      price: 100
+      price: 10000
     }),
     Item.create({
       name: "Jason's Buy In",
-      price: 150
+      price: 15000
     }),
     Item.create({
       name: "Andrew's Buy In",
-      price: 50
+      price: 5000
     }),
+    Item.create({
+      name: "David's Ticket",
+      price: 1100,
+    }),
+    Item.create({
+      name: "Cody's Ticket",
+      price: 1100,
+    }),
+    Item.create({
+      name: "Jason's Ticket",
+      price: 1100,
+    }),
+    Item.create({
+      name: "Andrew's Ticket",
+      price: 1100,
+    
+    }),
+    Item.create({
+      name: "Popcorn",
+      price: 800,
+    }),
+    Item.create({
+      name: "Candy",
+      price: 400,
+    }),
+    Item.create({
+      name: "Soda",
+      price: 600,
+    })
   ])
 
   console.log(`seeded ${items.length} items`)
@@ -136,7 +164,12 @@ async function seed() {
       cardDownId: 2,
     }),
     Receipt.create({
-      name: "Poker Night 7/14/21",
+      name: "Going to the Movies",
+      isPaid: false,
+      cardDownId: 3
+    }),
+    Receipt.create({
+      name: "Buy Ins",
       isPaid: true,
       isApproved: true,
       cardDownId: 2
@@ -153,7 +186,6 @@ async function seed() {
 
   let fries = items[0]
   let calamari = items[1]
-
   let pokeNachos = items[2]
   let stella = items[3]
   let steak = items[4]
@@ -170,29 +202,38 @@ async function seed() {
   let jasonBuyIn = items[14]
   let andrewBuyIn = items[15]
 
-  let dinner = events[0]
+  let davidMovieTicket = items[16]
+  let codyMovieTicket = items[17]
+  let jasonMovieTicket = items[18]
+  let andrewMovieTicket = items[19]
+  let popcorn = items[20]
+  let candy = items[21]
+  let soda = items[22]
+
+  let boysNightOut = events[0]
   let pokerNight = events[1]
-  let drinks = events[3]
 
   let dinnerReceipt = receipts[0]
   let drinksReceipt = receipts[1]
-  let pokerNightReceipt = receipts[2]
+  let movieReceipt = receipts[2]
+  let buyInsReceipt = receipts[3]
 
   //drinks event is to demonstrate event ready to be closed
   //dinner event is to demonstrate event that needs settling
   //poker night event is to demonstrate past events
-  await jason.addEvents([dinner, drinks, pokerNight])
-  await david.addEvent([dinner, pokerNight])
-  await andrew.addEvent([dinner, pokerNight])
-  await cody.addEvent([dinner, pokerNight])
+  await jason.addEvents([boysNightOut, pokerNight])
+  await david.addEvent([boysNightOut, pokerNight])
+  await andrew.addEvent([boysNightOut, pokerNight])
+  await cody.addEvent([boysNightOut, pokerNight])
 
-  await dinnerReceipt.setEvent(dinner)
-  await drinksReceipt.setEvent(drinks)
-  await pokerNightReceipt.setEvent(pokerNight)
+  await dinnerReceipt.setEvent(boysNightOut)
+  await drinksReceipt.setEvent(boysNightOut)
+  await movieReceipt.setEvent(boysNightOut)
+  await buyInsReceipt.setEvent(pokerNight)
 
+  // for dinner receipt
   await fries.setReceipt(dinnerReceipt)
   await calamari.setReceipt(dinnerReceipt)
-
   await pokeNachos.setReceipt(dinnerReceipt)
   await steak.setReceipt(dinnerReceipt)
   await penne.setReceipt(dinnerReceipt)
@@ -203,35 +244,45 @@ async function seed() {
   await porkBuns.setReceipt(dinnerReceipt)
 
   //for drinks receipt
-  await jason.setItems([stella, blueMoon])
-  await stella.update({ isClaimed: true })
-  await blueMoon.update({ isClaimed: true })
-
   await blueMoon.setReceipt(drinksReceipt)
   await stella.setReceipt(drinksReceipt)
 
+
+  //for movie receipt
+
+  await davidMovieTicket.setReceipt(movieReceipt)
+  await codyMovieTicket.setReceipt(movieReceipt)
+  await jasonMovieTicket.setReceipt(movieReceipt)
+  await andrewMovieTicket.setReceipt(movieReceipt)
+  await popcorn.setReceipt(movieReceipt)
+  await candy.setReceipt(movieReceipt)
+  await soda.setReceipt(movieReceipt)
+
+
   // for poker night receipt
-  await jason.setItems([jasonBuyIn])
+  await jason.setItems(jasonBuyIn)
   await jasonBuyIn.update({ isClaimed: true })
-  await david.setItems([davidBuyIn])
+  await david.setItems(davidBuyIn)
   await davidBuyIn.update({ isClaimed: true })
-  await cody.setItems([codyBuyIn])
+  await cody.setItems(codyBuyIn)
   await codyBuyIn.update({ isClaimed: true })
   await andrew.setItems(andrewBuyIn)
   await andrewBuyIn.update({ isClaimed: true })
 
-  await davidBuyIn.setReceipt(pokerNightReceipt)
-  await codyBuyIn.setReceipt(pokerNightReceipt)
-  await jasonBuyIn.setReceipt(pokerNightReceipt)
-  await andrewBuyIn.setReceipt(pokerNightReceipt)
+  await davidBuyIn.setReceipt(buyInsReceipt)
+  await codyBuyIn.setReceipt(buyInsReceipt)
+  await jasonBuyIn.setReceipt(buyInsReceipt)
+  await andrewBuyIn.setReceipt(buyInsReceipt)
 
   // update cardDownID dinner user
-  await dinnerReceipt.update({ cardDownId: jason.id })
-  await dinnerReceipt.update({ cardDownHandle: jason.payPalMe })
-  await drinksReceipt.update({ cardDownId: jason.id })
-  await drinksReceipt.update({ cardDownHandle: jason.payPalMe })
-  await pokerNightReceipt.update({ cardDownId: jason.id })
-  await pokerNightReceipt.update({ cardDownHandle: jason.payPalMe })
+  await dinnerReceipt.update({ cardDownId: david.id })
+  await dinnerReceipt.update({ cardDownHandle: david.payPalMe })
+  await drinksReceipt.update({ cardDownId: david.id })
+  await drinksReceipt.update({ cardDownHandle: david.payPalMe })
+  await buyInsReceipt.update({ cardDownId: david.id })
+  await buyInsReceipt.update({ cardDownHandle: david.payPalMe })
+  await movieReceipt.update({ cardDownId: david.id })
+  await movieReceipt.update({ cardDownHandle: david.payPalMe })
 
   
 
