@@ -157,24 +157,36 @@ const updateItem = {
   }
 }
 
-const updateItems = {
+const addOrUpdateItems = {
   type: new GraphQLList(ItemSchema),
   args: {
     items: { type: GraphQLList(ItemInput) },
     receiptId: { type: GraphQLID }
   },
   async resolve(parent, { items, receiptId }) {
-    const oldReceipt = await Receipt.findByPk(receiptId, {
-      include: { model: Item }
-    })
-    console.log(oldReceipt.dataValues.items)
+    let newItemArr = []
+    console.log("original item arr -->", items)
+    const currentReceipt = await Receipt.findByPk(receiptId)
     for (let i = 0; i < items.length; i++) {
-      await oldReceipt.items[i].update({
-        name: items[i].name,
-        price: items[i].price
-      })
+      console.log("enter for loop")
+      console.log(items[i], items[i].id, items[i].id === undefined)
+      if (items[i].id) {
+        const itemToUpdate = await Item.findByPk(items[i].id)
+        console.log("updating", itemToUpdate.name)
+        const updatedItem = await itemToUpdate.update({
+          name: items[i].name,
+          price: items[i].price
+        })
+        newItemArr.push(updatedItem)
+      } else {
+        console.log("creating item -->", items[i].name)
+        const itemToAdd = await Item.create(items[i])
+        await itemToAdd.setReceipt(currentReceipt)
+        newItemArr.push(itemToAdd)
+      }
     }
-    return oldReceipt
+    console.log("New Item Arr -->", newItemArr)
+    return newItemArr
   }
 }
 
@@ -188,7 +200,7 @@ module.exports = {
     addItems,
     claimItem,
     removeItem,
-    updateItems
+    addOrUpdateItems
   },
   ItemSchema
 }
