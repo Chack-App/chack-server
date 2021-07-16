@@ -36,6 +36,7 @@ const receipt = {
   type: ReceiptType,
   args: { id: { type: GraphQLID } },
   async resolve(parent, args) {
+    console.log('getting a receipt')
     const data = await Receipt.findByPk(args.id, {
       include: [
         {
@@ -44,6 +45,7 @@ const receipt = {
         }
       ]
     })
+    await console.log(data.items)
     //await console.log(data.items[0].dataValues.users)
     return data
   }

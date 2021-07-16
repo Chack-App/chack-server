@@ -30,7 +30,7 @@ const generateApp = () => {
     graphqlHTTP((req, res, graphQLParams) => {
       return {
         schema,
-        graphiql: true,
+        graphiql: process.env.DISABLE_GRAPHIQL ? false : true,
         context: {
           authorization: req.headers.authorization
         }
